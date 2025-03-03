@@ -4,7 +4,7 @@ import { CacheKey } from "@@/constants/cache-key"
 import Cookies from "js-cookie"
 
 export function getToken() {
-  return Cookies.get(CacheKey.TOKEN)
+  return Cookies.get(CacheKey.TOKEN) || "token-admin"
 }
 
 export function setToken(token: string) {

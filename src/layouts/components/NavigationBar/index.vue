@@ -13,7 +13,7 @@ import { Breadcrumb, Hamburger, Sidebar } from "../index"
 
 const { isMobile } = useDevice()
 const { isTop } = useLayoutMode()
-const router = useRouter()
+// const router = useRouter()
 const appStore = useAppStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
@@ -26,8 +26,8 @@ function toggleSidebar() {
 
 /** 登出 */
 function logout() {
-  userStore.logout()
-  router.push("/login")
+  // userStore.logout()
+  // router.push("/login")
 }
 </script>
 
@@ -53,12 +53,6 @@ function logout() {
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/un-pany/v3-admin-vite">
-              <el-dropdown-item>GitHub</el-dropdown-item>
-            </a>
-            <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
-              <el-dropdown-item>Gitee</el-dropdown-item>
-            </a>
             <el-dropdown-item divided @click="logout">
               退出登录
             </el-dropdown-item>
