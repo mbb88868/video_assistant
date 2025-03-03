@@ -62,6 +62,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    children: [
+      {
+        path: "video-assistant",
+        component: () => import("@/pages/video-assistant/index.vue"),
+        name: "video-assistant",
+        meta: {
+          title: "视频助手",
+          svgIcon: "search",
+          affix: true
+        }
+      }
+    ]
   }
 ]
 
