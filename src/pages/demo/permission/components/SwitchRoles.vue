@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { useUserStore } from "@/pinia/stores/user"
+import { useUserStore } from "@/pinia/stores/user";
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const switchRoles = ref(userStore.roles[0])
+const switchRoles = ref(userStore.roles[0]);
 
 watch(switchRoles, (value) => {
-  userStore.changeRoles(value)
-})
+  userStore.changeRoles(value);
+});
 </script>
 
 <template>

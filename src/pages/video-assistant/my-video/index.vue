@@ -2,16 +2,13 @@
 defineOptions({
   // 命名当前组件
   name: "ElementPlus"
-})
+});
 const form = ref({
   videoFile: "",
   title: "",
   tags: "",
   location: ""
-})
-function submitForm() {
-  consle.log(123)
-}
+});
 </script>
 
 <template>
@@ -40,47 +37,52 @@ function submitForm() {
       <div class="middle-content">
         <!-- 视频组件 -->
         <el-card>
-          <el-form :model="form" label-width="80px">
-            <el-form-item label="视频文件">
-              <el-input v-model="form.videoFile" placeholder="请选择视频文件" />
-            </el-form-item>
+          <el-form label-position="top" :model="form" label-width="80px">
+            <div class="content-introduce">
+              <div>
+                <el-button type="primary" class="long-btn" style="margin-right: 12px;">
+                  添加本地视频
+                </el-button>
+                <el-button type="primary" class="long-btn" plain>
+                  已添加的视频
+                </el-button>
+              </div>
+              <span
+                style="font-size: 12px; color: #9f9f9f;margin: 12px 0 20px 0;"
+              >本地视频支持MP4、MOV、MKV、AVI、FLV、MPEG、OGG、VOB、WEBM、WMV、RMVB等格式，最大4G，较大视频请压缩后上传。</span>
+            </div>
+
             <el-form-item label="标题">
               <el-input v-model="form.title" placeholder="请输入标题" />
             </el-form-item>
+            <el-form-item label="视频简介">
+              <el-input v-model="form.tags" placeholder="请输入视频简介" />
+            </el-form-item>
             <el-form-item label="标签">
-              <el-input v-model="form.tags" placeholder="请输入标签" />
-            </el-form-item>
-            <el-form-item label="位置">
-              <el-input v-model="form.location" placeholder="请输入位置" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm">
-                发布
-              </el-button>
+              <el-input v-model="form.location" placeholder="请输入标签" />
             </el-form-item>
           </el-form>
         </el-card>
       </div>
       <div class="right-platform">
         <!-- 平台组件 -->
-        <el-card>
-          <el-form :model="form" label-width="80px">
-            <el-form-item label="视频文件">
-              <el-input v-model="form.videoFile" placeholder="请选择视频文件" />
-            </el-form-item>
+        <div class="pingtai">
+          <span class="pingtai-item">平台</span>
+          <span class="pingtai-item">抖音1</span>
+          <span class="pingtai-item">抖音2</span>
+          <span class="pingtai-item">抖音3</span>
+          <span class="pingtai-item">抖音4</span>
+        </div>
+        <el-card class="pingtai-conter">
+          <el-form label-position="top" :model="form" label-width="80px">
             <el-form-item label="标题">
               <el-input v-model="form.title" placeholder="请输入标题" />
             </el-form-item>
+            <el-form-item label="视频简介">
+              <el-input v-model="form.tags" placeholder="请输入视频简介" />
+            </el-form-item>
             <el-form-item label="标签">
-              <el-input v-model="form.tags" placeholder="请输入标签" />
-            </el-form-item>
-            <el-form-item label="位置">
-              <el-input v-model="form.location" placeholder="请输入位置" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm">
-                发布
-              </el-button>
+              <el-input v-model="form.location" placeholder="请输入标签" />
             </el-form-item>
           </el-form>
         </el-card>
@@ -113,6 +115,40 @@ function submitForm() {
 
   .middle-content {
     flex: 1;
+
+    .content-introduce {
+      display: flex;
+      flex-direction: column;
+
+      .long-btn {
+        margin: 0;
+        width: 100px;
+      }
+    }
+  }
+
+  .right-platform {
+    flex: 1;
+    display: flex;
+
+    .pingtai {
+      display: flex;
+      flex-direction: column;
+
+      .pingtai-item {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        background-color: #ccc;
+        border: 1px solid #fff;
+        border-top: 0;
+      }
+    }
+
+    .pingtai-conter {
+      flex: 1;
+    }
   }
 }
 

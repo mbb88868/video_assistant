@@ -1,52 +1,52 @@
 <script lang="ts" setup>
-import type { CreateOrUpdateTableRequestData, TableData } from "@@/apis/tables/type"
-import type { FormInstance, FormRules } from "element-plus"
-import { createTableDataApi, deleteTableDataApi, getTableDataApi, updateTableDataApi } from "@@/apis/tables"
-import { usePagination } from "@@/composables/usePagination"
-import { CirclePlus, Delete, Download, Refresh, RefreshRight, Search } from "@element-plus/icons-vue"
-import { cloneDeep } from "lodash-es"
+import type { CreateOrUpdateTableRequestData, TableData } from "@@/apis/tables/type";
+import type { FormInstance, FormRules } from "element-plus";
+import { createTableDataApi, deleteTableDataApi, getTableDataApi, updateTableDataApi } from "@@/apis/tables";
+import { usePagination } from "@@/composables/usePagination";
+import { CirclePlus, Delete, Download, Refresh, RefreshRight, Search } from "@element-plus/icons-vue";
+import { cloneDeep } from "lodash-es";
 
 defineOptions({
   // 命名当前组件
   name: "ElementPlus"
-})
+});
 
-const loading = ref<boolean>(false)
-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
+const loading = ref<boolean>(false);
+const { paginationData, handleCurrentChange, handleSizeChange } = usePagination();
 
 // #region 增
 const DEFAULT_FORM_DATA: CreateOrUpdateTableRequestData = {
   id: undefined,
   username: "",
   password: ""
-}
-const dialogVisible = ref<boolean>(false)
-const formRef = ref<FormInstance | null>(null)
-const formData = ref<CreateOrUpdateTableRequestData>(cloneDeep(DEFAULT_FORM_DATA))
+};
+const dialogVisible = ref<boolean>(false);
+const formRef = ref<FormInstance | null>(null);
+const formData = ref<CreateOrUpdateTableRequestData>(cloneDeep(DEFAULT_FORM_DATA));
 const formRules: FormRules<CreateOrUpdateTableRequestData> = {
   username: [{ required: true, trigger: "blur", message: "请输入用户名" }],
   password: [{ required: true, trigger: "blur", message: "请输入密码" }]
-}
+};
 function handleCreateOrUpdate() {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      ElMessage.error("表单校验不通过")
-      return
+      ElMessage.error("表单校验不通过");
+      return;
     }
-    loading.value = true
-    const api = formData.value.id === undefined ? createTableDataApi : updateTableDataApi
+    loading.value = true;
+    const api = formData.value.id === undefined ? createTableDataApi : updateTableDataApi;
     api(formData.value).then(() => {
-      ElMessage.success("操作成功")
-      dialogVisible.value = false
-      getTableData()
+      ElMessage.success("操作成功");
+      dialogVisible.value = false;
+      getTableData();
     }).finally(() => {
-      loading.value = false
-    })
-  })
+      loading.value = false;
+    });
+  });
 }
 function resetForm() {
-  formRef.value?.clearValidate()
-  formData.value = cloneDeep(DEFAULT_FORM_DATA)
+  formRef.value?.clearValidate();
+  formData.value = cloneDeep(DEFAULT_FORM_DATA);
 }
 // #endregion
 
@@ -58,54 +58,54 @@ function handleDelete(row: TableData) {
     type: "warning"
   }).then(() => {
     deleteTableDataApi(row.id).then(() => {
-      ElMessage.success("删除成功")
-      getTableData()
-    })
-  })
+      ElMessage.success("删除成功");
+      getTableData();
+    });
+  });
 }
 // #endregion
 
 // #region 改
 function handleUpdate(row: TableData) {
-  dialogVisible.value = true
-  formData.value = cloneDeep(row)
+  dialogVisible.value = true;
+  formData.value = cloneDeep(row);
 }
 // #endregion
 
 // #region 查
-const tableData = ref<TableData[]>([])
-const searchFormRef = ref<FormInstance | null>(null)
+const tableData = ref<TableData[]>([]);
+const searchFormRef = ref<FormInstance | null>(null);
 const searchData = reactive({
   username: "",
   phone: ""
-})
+});
 function getTableData() {
-  loading.value = true
+  loading.value = true;
   getTableDataApi({
     currentPage: paginationData.currentPage,
     size: paginationData.pageSize,
     username: searchData.username,
     phone: searchData.phone
   }).then(({ data }) => {
-    paginationData.total = data.total
-    tableData.value = data.list
+    paginationData.total = data.total;
+    tableData.value = data.list;
   }).catch(() => {
-    tableData.value = []
+    tableData.value = [];
   }).finally(() => {
-    loading.value = false
-  })
+    loading.value = false;
+  });
 }
 function handleSearch() {
-  paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1)
+  paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1);
 }
 function resetSearch() {
-  searchFormRef.value?.resetFields()
-  handleSearch()
+  searchFormRef.value?.resetFields();
+  handleSearch();
 }
 // #endregion
 
 // 监听分页参数的变化
-watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true });
 </script>
 
 <template>

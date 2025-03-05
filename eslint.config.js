@@ -1,4 +1,4 @@
-import antfu from "@antfu/eslint-config"
+import antfu from "@antfu/eslint-config";
 
 // 更多自定义配置可查阅仓库：https://github.com/antfu/eslint-config
 export default antfu(
@@ -12,7 +12,7 @@ export default antfu(
       // 引号风格 'single' | 'double'
       quotes: "double",
       // 是否启用分号
-      semi: false
+      semi: true
     },
     // 忽略文件
     ignores: []
@@ -39,4 +39,4 @@ export default antfu(
       "antfu/if-newline": "off"
     }
   }
-)
+);
