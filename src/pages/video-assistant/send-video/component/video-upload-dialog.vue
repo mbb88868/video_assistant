@@ -93,12 +93,8 @@ function clearCache() {
       URL.revokeObjectURL(file.url);
     }
   });
-
-  console.log("缓存已清除，文件列表为空。");
-}
-
-function clearVideo() {
   fileList.value = [];
+  console.log("缓存已清除，文件列表为空。");
 }
 </script>
 
@@ -120,11 +116,6 @@ function clearVideo() {
     <!-- 清除缓存按钮 -->
     <el-button type="warning" @click="clearCache">
       清除缓存
-    </el-button>
-
-    <!-- 清空视频 -->
-    <el-button type="danger" @click="clearVideo">
-      清空视频
     </el-button>
 
     <!-- 文件列表 -->

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { CirclePlus } from "@element-plus/icons-vue";
-
+import _ from "lodash";
 import UniqueFileUploader from "./component/video-upload-dialog.vue";
 // 存储上传的文件信息
 const uploadedFiles = ref<{ name: string; size: number }[]>([]);
@@ -19,7 +19,7 @@ function handleFilesUploaded(files: { name: string; size: number; url: string }[
 const form = ref({
   title: "",
   content: "",
-  tags: ""
+  tags: []
 });
 
 // 初始化卡片库（修正拼写错误）
@@ -28,7 +28,7 @@ const containerLibrary = ref([
     id: 1,
     title: "",
     content: "",
-    tags: "",
+    tags: [],
     status: "edit"
   }
 ]);
@@ -42,7 +42,7 @@ function addCard() {
     id: newId,
     title: "",
     content: "",
-    tags: "",
+    tags: [],
     status: "edit"
   });
 }
@@ -87,24 +87,29 @@ function randomSelectionCard() {
   // 提取独立的 content、title 和 tags 数组
   const contents = filterContainerLibrary.map(item => item.content);
   const titles = filterContainerLibrary.map(item => item.title);
-  const tagsList = filterContainerLibrary.map(item => item.tags);
+  const tagsList = _.flattenDeep(filterContainerLibrary.map(item => item.tags));
 
-  // 辅助函数：从数组中随机选择一个元素
-  const getRandomElement = (arr: string | any[]) => {
-    if (Array.isArray(arr) && arr.length > 0) {
-      const randomIndex = Math.floor(Math.random() * arr.length);
-      return arr[randomIndex];
+  // 辅助函数：从数组中随机选择指定数量的元素
+  const getRandomElements = (arr: string | _.NumericDictionary<any> | null | undefined, count = 1) => {
+    if (!Array.isArray(arr) || arr.length === 0) return [];
+    if (count <= 0) return [];
+
+    // 如果需要的数量大于数组长度，则返回整个数组的随机排列
+    if (count >= arr.length) {
+      return _.shuffle(arr);
     }
-    return null; // 如果数组为空或不是数组，返回 null
+
+    // 使用 lodash 的 sampleSize 方法随机选择指定数量的元素
+    return _.sampleSize(arr, count);
   };
 
   // 随机选择内容、标题和标签
-  const randomContent = getRandomElement(contents);
-  const randomTitle = getRandomElement(titles);
-  const randomTags = getRandomElement(tagsList);
+  const randomContent = getRandomElements(contents)[0];
+  const randomTitle = getRandomElements(titles)[0];
+  const randomTags: any = getRandomElements(tagsList, 5);
 
   // 检查是否成功获取所有需要的字段
-  if (!randomContent || !randomTitle || !randomTags) {
+  if (!randomContent || !randomTitle || randomTags.length !== 5) {
     return undefined; // 如果任一字段获取失败，返回 undefined
   }
 
@@ -112,16 +117,8 @@ function randomSelectionCard() {
   form.value = {
     content: randomContent,
     title: randomTitle,
-    tags: randomTags // 如果需要随机选择一个标签而不是整个数组，可以进一步处理
+    tags: randomTags
   };
-
-  // 如果你希望只选择一个标签而不是整个数组，可以这样修改：
-  // const randomSingleTag = getRandomElement(randomTags);
-  // form.value = {
-  //   content: randomContent,
-  //   title: randomTitle,
-  //   tags: [randomSingleTag], // 或者根据需求调整
-  // };
 }
 </script>
 
@@ -172,7 +169,14 @@ function randomSelectionCard() {
               />
             </el-form-item>
             <el-form-item label="标签">
-              <el-input v-model="form.tags" placeholder="请输入标签" />
+              <el-input-tag :max="9" v-model="form.tags" placeholder="请输入标签" />
+              <el-alert
+                type="info"
+                style="margin-top: 12px;white-space: pre-line;"
+                :closable="false"
+                title="1、您可添加2~9个标签，按回车确认。部分平台最多显示5个标签，超出默认显示前5个标签。
+                2、企鹅，b站，网易，搜狗，大风平台视频标签不能为空，企鹅至少2个标签，网易至少2个标签，网易至少3个标签"
+              />
             </el-form-item>
           </el-form>
           <el-button
@@ -212,13 +216,22 @@ function randomSelectionCard() {
                   />
                 </el-form-item>
                 <el-form-item label="标签">
-                  <el-input v-model="card.tags" placeholder="请输入标签" />
+                  <el-input-tag v-model="card.tags" placeholder="请输入标签" />
                 </el-form-item>
               </el-form>
               <div v-if="card.status === 'read'" style="display: flex;flex-direction: column;">
-                <div> <span>标题：</span> <span>{{ card.title }}</span></div>
-                <div> <span>文案内容：</span> <span>{{ card.content }}</span></div>
-                <div> <span>标签：</span><span>{{ card.tags }}</span></div>
+                <div style="margin-bottom: 6px;">
+                  <span>标题：</span> <span>{{ card.title }}</span>
+                </div>
+                <div style="margin-bottom: 6px;">
+                  <span>文案内容：</span> <span>{{ card.content }}</span>
+                </div>
+                <div>
+                  <span>标签：</span>
+                  <el-tag style="margin-right: 6px;" v-for="(item, index) in card.tags" :key="index" type="info">
+                    {{ item }}
+                  </el-tag>
+                </div>
               </div>
             </div>
 
@@ -249,11 +262,13 @@ function randomSelectionCard() {
           </el-card>
 
           <!-- 添加卡片的按钮 -->
-          <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
-            <el-icon :size="20" color="#409EFF">
-              <CirclePlus />
-            </el-icon>
-            <span style="margin-left: 8px;" @click="addCard">添加卡片</span>
+          <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; ">
+            <div @click="addCard" style="cursor: pointer;display: flex;">
+              <el-icon :size="20" color="#409EFF">
+                <CirclePlus />
+              </el-icon>
+              <span style="margin-left: 8px;">添加卡片</span>
+            </div>
           </div>
         </el-card>
       </div>
@@ -285,7 +300,8 @@ function randomSelectionCard() {
 
   .middle-content {
     flex: 1;
-
+    overflow-y: auto;
+    max-height: 80vh;
     .content-introduce {
       display: flex;
       flex-direction: column;
@@ -300,6 +316,7 @@ function randomSelectionCard() {
   .right-platform {
     flex: 1;
     display: flex;
+    height: 80vh;
 
     .pingtai {
       display: flex;
